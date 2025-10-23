@@ -25,10 +25,10 @@ namespace Domain.Entities
 
         public Policy(PolicyNumber folio, TypePolicy type, DateTime initDate, DateTime endDate, decimal insuredAmount, bool status)
         {
-            if (InitDate >= EndDate)
+            if (initDate >= endDate)
                 throw new Exception("La fecha de inicio debe ser anterior a la fecha de fin.");
 
-            if (InsuredAmount <= 0)
+            if (insuredAmount <= 0)
                 throw new Exception("El monto asegurado debe ser mayor a cero.");
 
             Folio = folio;
