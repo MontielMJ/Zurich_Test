@@ -25,8 +25,8 @@ namespace Domain.Entities
 
         public virtual ICollection<Policy> Policies { get; set; } = new List<Policy>();
 
-        public Client() { }
-        protected Client(string fullname, Email email, decimal phone, decimal identificationNumber, DateTime createAt, bool status) {
+        protected Client() { }
+        public Client(string fullname, Email email, decimal phone, decimal identificationNumber, DateTime createAt, bool status) {
         
             this.Fullname = fullname;
             this.Email = email;
