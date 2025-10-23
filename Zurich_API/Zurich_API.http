@@ -1,0 +1,6 @@
+@Zurich_API_HostAddress = http://localhost:5145
+
+GET {{Zurich_API_HostAddress}}/Client/
+Accept: application/json
+
+###
