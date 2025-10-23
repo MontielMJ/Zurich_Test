@@ -1,11 +1,13 @@
 ﻿using Application.Handler;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Zurich_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Client")]
     public class ClientController : ControllerBase
     {
         private readonly ClienteHandler _registrarClienteHandler;
