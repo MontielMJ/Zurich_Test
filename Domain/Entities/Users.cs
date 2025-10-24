@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -15,8 +16,6 @@ namespace Domain.Entities
         public int IdRol { get; set; }
         public DateTime CreateAt { get; set; }
         public bool Status { get; set; }
-
-
-        public Roles? Role { get; set; }
+        public virtual Roles Role { get; set; }
     }
 }

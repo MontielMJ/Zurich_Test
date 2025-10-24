@@ -23,31 +23,41 @@ builder.Services.AddScoped<ClienteHandler>();
 builder.Services.AddScoped<IPolicyRepository, PolicyRepository>();
 builder.Services.AddScoped<PolizaHandler>();
 
-
-
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<AuthHandler>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
 
 builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
-    {
-        options.RequireHttpsMetadata = false; 
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Value ,
-            ValidAudience = builder.Configuration.GetSection("JwtSettings:Audience").Value,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings:Key").Value))
-        };
-    });
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false; 
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Value ,
+                    ValidAudience = builder.Configuration.GetSection("JwtSettings:Audience").Value,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings:Key").Value))
+                };
+            });
+
+builder.Services.AddAuthorization(options => {
+    options.AddPolicy("ClientOrAdmin", policy =>
+        policy.RequireRole(UserRoles.Admin, UserRoles.Client));
+    options.AddPolicy("Admin", policy =>
+        policy.RequireRole(UserRoles.Admin));
+});
+
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Permisson", builder =>

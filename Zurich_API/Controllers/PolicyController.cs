@@ -1,11 +1,14 @@
 ﻿using Application.Handler;
 using Domain.Entities;
+using Infrastructure.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Zurich_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Policy = UserRoles.PolicyClientOrAdmin)]
     public class PolicyController : ControllerBase
     {
         private readonly PolizaHandler _polizaHandler;
