@@ -37,7 +37,7 @@ public partial class ZurichDbContext : DbContext
 
         modelBuilder.Entity<Client>(entity =>
         {
-            entity.ToTable("tbl_clients");
+            entity.ToTable("clients");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Fullname).HasMaxLength(100).IsUnicode(false);
             entity.Property(e => e.Email).HasColumnName("email").HasConversion(emailConverter).HasMaxLength(100).IsUnicode(false);
@@ -54,7 +54,7 @@ public partial class ZurichDbContext : DbContext
 
         modelBuilder.Entity<Policy>(entity =>
         {
-            entity.ToTable("tbl_insurance_policies");
+            entity.ToTable("insurancePolicies");
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Folio).HasColumnName("folio").HasConversion(policyNumberConverter).HasColumnType("numeric(10, 0)");
             entity.Property(e => e.InitDate).HasColumnName("initDate").HasColumnType("datetime");
@@ -68,9 +68,10 @@ public partial class ZurichDbContext : DbContext
 
         modelBuilder.Entity<Roles>(entity =>
         {
-            entity.ToTable("tb_cat_roles");
+            entity.ToTable("catRoles");
+            entity.HasKey(e => e.Id);
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Rol).HasColumnName("name").HasMaxLength(50);
+            entity.Property(e => e.Rol).HasColumnName("rol").HasMaxLength(50);
             entity.Property(e => e.CreateAt).HasColumnName("createAt").HasColumnType("datetime");
             entity.Property(e => e.Status).HasColumnName("status").HasColumnType("boolean");
 
@@ -78,7 +79,7 @@ public partial class ZurichDbContext : DbContext
 
         modelBuilder.Entity<PolicyType>(entity =>
         {
-            entity.ToTable("tbl_cat_type_policy");
+            entity.ToTable("catTypePolicy");
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Type).HasColumnName("type").HasMaxLength(50);
             entity.Property(e => e.Status).HasColumnName("status").HasColumnType("boolean");
@@ -87,16 +88,19 @@ public partial class ZurichDbContext : DbContext
 
         modelBuilder.Entity<Users>(entity =>
         {
-            entity.ToTable("tbl_cat_users");
+            entity.ToTable("catUsers");
+            entity.HasKey(e => e.Id);
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.User).HasColumnName("user").HasMaxLength(50);
             entity.Property(e => e.Password).HasColumnName("password").HasMaxLength(50);
             entity.Property(e => e.IdRol).HasColumnName("idRol").HasColumnType("int");
-            entity.Property(e => e.Status).HasColumnName("status").HasColumnType("boolean");
+            entity.Property(e => e.Status).HasColumnName("status").HasColumnType("bit"); // boolean → bit
             entity.Property(e => e.CreateAt).HasColumnName("createAt").HasColumnType("datetime");
 
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+       
+            entity.HasOne(d => d.Role)
+                .WithMany(p => p.Users)
                 .HasForeignKey(d => d.IdRol)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tbl_cat_users_tb_cat_roles");

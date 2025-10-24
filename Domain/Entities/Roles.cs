@@ -12,7 +12,7 @@ namespace Domain.Entities
         public string Rol { get; set; } = null!;
         public DateTime CreateAt { get; set; }
         public bool Status { get; set; }
-        public ICollection<Users> Users { get; set; } = new List<Users>();
+        public virtual ICollection<Users> Users { get; set; }
         public Roles()
         {
         }

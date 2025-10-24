@@ -1,0 +1,56 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: zurich_sql
+    environment:
+      SA_PASSWORD: "Zur1chDB!P@ss"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1434:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - zurich-net
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools  
+    depends_on:
+      sqlserver:
+         condition: service_healthy
+    command: >
+          /bin/bash -c "
+            echo '=== INICIALIZACIÓN BD ===' &&
+            sleep 50 &&  
+            echo 'Verificando archivos...' &&
+            ls -la /initdb/ &&
+            echo 'Ejecutando script...' &&
+            /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -d master -i /initdb/create_database.sql &&
+            echo 'Base de datos creada exitosamente'"
+    volumes:
+      - ./initdb:/initdb
+    networks:
+      - zurich-net
+    restart: on-failure
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zurich_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MyConnection=Server=sqlserver,1433;Database=ZurichDB;User Id=sa;Password=Zur1chDB!P@ss;TrustServerCertificate=True;
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+      - db-init
+    networks:
+      - zurich-net
+
+volumes:
+  sql_data:
+
+networks:
+  zurich-net:
+    driver: bridge
