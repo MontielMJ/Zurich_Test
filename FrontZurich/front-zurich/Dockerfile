@@ -20,7 +20,7 @@ RUN npm run build --prod
 FROM nginx:alpine
 
 # Copiar los archivos generados de Angular
-COPY --from=build /app/dist/front-zurich /usr/share/nginx/html
+COPY --from=build /app/dist/front-zurich/browser /usr/share/nginx/html
 
 # Configuración Nginx para SPA
 RUN rm /etc/nginx/conf.d/default.conf

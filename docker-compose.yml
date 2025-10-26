@@ -15,7 +15,7 @@ services:
     networks:
       - zurich-net
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Zur1chDB!P@ss' -Q 'SELECT 1' || exit 1"]
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -Q 'SELECT 1'"]
       interval: 15s
       timeout: 5s
       retries: 10
@@ -27,13 +27,16 @@ services:
       - sqlserver
     volumes:
       - ./initdb:/initdb
-      - ./wait-for-sql.sh:/wait-for-sql.sh
-    entrypoint: ["/bin/sh", "-c"]
     command: >
-      sh /wait-for-sql.sh sqlserver 1433 60 &&
-      echo '=== INICIALIZANDO BASE DE DATOS ===' &&
+      sh -c "
+      echo '=== INICIALIZACIÓN DE BASE DE DATOS ===' &&
+      echo 'Verificando conexión con SQL Server...' &&
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -Q 'SELECT @@VERSION' &&
+      echo 'Ejecutando script de creación...' &&
       /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -d master -i /initdb/create_database.sql &&
-      echo '=== BASE DE DATOS CREADA ==='
+      echo 'Verificando que la base de datos fue creada...' &&
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -Q 'SELECT name FROM sys.databases' &&
+      echo '=== INICIALIZACIÓN COMPLETADA ==='"
     networks:
       - zurich-net
     restart: on-failure
@@ -49,6 +52,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
+      - sqlserver
       - db-init
     networks:
       - zurich-net
@@ -65,7 +69,7 @@ services:
     networks:
       - zurich-net
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      test: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
