@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -5,29 +7,33 @@ services:
     environment:
       SA_PASSWORD: "Zur1chDB!P@ss"
       ACCEPT_EULA: "Y"
+      MSSQL_MEMORY_LIMIT_MB: "2048"
     ports:
       - "1434:1433"
     volumes:
       - sql_data:/var/opt/mssql
     networks:
       - zurich-net
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Zur1chDB!P@ss' -Q 'SELECT 1' || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   db-init:
-    image: mcr.microsoft.com/mssql-tools  
+    image: mcr.microsoft.com/mssql-tools
     depends_on:
-      sqlserver:
-         condition: service_healthy
-    command: >
-          /bin/bash -c "
-            echo '=== INICIALIZACIÓN BD ===' &&
-            sleep 50 &&  
-            echo 'Verificando archivos...' &&
-            ls -la /initdb/ &&
-            echo 'Ejecutando script...' &&
-            /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -d master -i /initdb/create_database.sql &&
-            echo 'Base de datos creada exitosamente'"
+      - sqlserver
     volumes:
       - ./initdb:/initdb
+      - ./wait-for-sql.sh:/wait-for-sql.sh
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      sh /wait-for-sql.sh sqlserver 1433 60 &&
+      echo '=== INICIALIZANDO BASE DE DATOS ===' &&
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -d master -i /initdb/create_database.sql &&
+      echo '=== BASE DE DATOS CREADA ==='
     networks:
       - zurich-net
     restart: on-failure
@@ -43,10 +49,27 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - sqlserver
       - db-init
     networks:
       - zurich-net
+
+  frontend:
+    build:
+      context: ./FrontZurich/front-zurich
+      dockerfile: Dockerfile
+    container_name: zurich_front
+    ports:
+      - "3000:8080"
+    depends_on:
+      - api
+    networks:
+      - zurich-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
 
 volumes:
   sql_data:

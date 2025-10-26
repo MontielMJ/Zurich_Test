@@ -1,0 +1,64 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon class="login-icon">security</mat-icon>
+        Sistema de Seguros
+      </mat-card-title>
+      <mat-card-subtitle>Iniciar Sesión para Continuar</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+        <mat-form-field class="full-width">
+          <mat-label>Email</mat-label>
+          <input 
+            matInput 
+            type="email" 
+            [(ngModel)]="credentials.username" 
+            name="email"
+            required
+            placeholder="usuario@ejemplo.com">
+          <mat-icon matSuffix>email</mat-icon>
+          <mat-error>El email es requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Contraseña</mat-label>
+          <input 
+            matInput 
+            [type]="hidePassword ? 'password' : 'text'"
+            [(ngModel)]="credentials.password" 
+            name="password"
+            required
+            minlength="4">
+          <button 
+            mat-icon-button 
+            matSuffix 
+            (click)="togglePasswordVisibility()" 
+            type="button">
+            <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error>La contraseña debe tener al menos 4 caracteres</mat-error>
+        </mat-form-field>
+
+        <!-- Mensaje de error -->
+        <div *ngIf="errorMessage" class="error-message">
+          <mat-icon>error</mat-icon>
+          {{ errorMessage }}
+        </div>
+
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit" 
+          class="full-width login-button"
+          [disabled]="isLoading">
+          <mat-icon *ngIf="!isLoading">login</mat-icon>
+          <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+          {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

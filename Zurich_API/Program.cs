@@ -51,10 +51,8 @@ builder.Services.AddAuthentication("Bearer")
             });
 
 builder.Services.AddAuthorization(options => {
-    options.AddPolicy("ClientOrAdmin", policy =>
-        policy.RequireRole(UserRoles.Admin, UserRoles.Client));
-    options.AddPolicy("Admin", policy =>
-        policy.RequireRole(UserRoles.Admin));
+    options.AddPolicy("ClientOrAdmin", policy => policy.RequireRole(UserRoles.Admin, UserRoles.Client));
+    options.AddPolicy("Admin", policy => policy.RequireRole(UserRoles.Admin));
 });
 
 

@@ -61,7 +61,7 @@ public partial class ZurichDbContext : DbContext
             entity.Property(e => e.EndDate).HasColumnName("endDate").HasColumnType("datetime");
             entity.Property(e => e.InsuredAmount).HasColumnName("insuredAmount").HasColumnType("decimal(18, 2)");
             entity.Property(e => e.IdClient).HasColumnName("idClient").HasColumnType("int");
-            entity.Property(e => e.idTypePolicy).HasColumnName("idTypePolicy").HasColumnType("int");
+            entity.Property(e => e.IdTypePolicy).HasColumnName("idTypePolicy").HasColumnType("int");
             entity.Property(e => e.Status).HasColumnName("status").HasColumnType("boolean");
 
         });
