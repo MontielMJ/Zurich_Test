@@ -8,6 +8,7 @@ using Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +36,7 @@ var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
 builder.Services.AddAuthentication("Bearer")
             .AddJwtBearer(options =>
             {
-                options.RequireHttpsMetadata = false; 
+                options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -43,72 +44,94 @@ builder.Services.AddAuthentication("Bearer")
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Value ,
+                    ValidIssuer = builder.Configuration.GetSection("JwtSettings:Issuer").Value,
                     ValidAudience = builder.Configuration.GetSection("JwtSettings:Audience").Value,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(builder.Configuration.GetSection("JwtSettings:Key").Value))
                 };
             });
 
-builder.Services.AddAuthorization(options => {
+builder.Services.AddAuthorization(options =>
+{
     options.AddPolicy("ClientOrAdmin", policy => policy.RequireRole(UserRoles.Admin, UserRoles.Client));
     options.AddPolicy("Admin", policy => policy.RequireRole(UserRoles.Admin));
 });
 
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .Enrich.WithMachineName()
+    .Enrich.WithThreadId()
+    .CreateLogger();
+try
+{   builder.Host.UseSerilog();
+    Log.Information("Iniciando Zurich API");
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("Permisson", builder =>
+    
+    builder.Services.AddCors(options =>
     {
-        builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-    });
-});
-
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-        options.JsonSerializerOptions.WriteIndented = true;
+        options.AddPolicy("Permisson", builder =>
+        {
+            builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+        });
     });
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new() { Title = "Zurich API", Version = "v1" });
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+            options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+            options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            options.JsonSerializerOptions.WriteIndented = true;
+        });
+
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(c =>
     {
-        Description = "Usa 'Bearer {token}'",
-        Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey
-    });
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement {
+        c.SwaggerDoc("v1", new() { Title = "Zurich API", Version = "v1" });
+        c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+        {
+            Description = "Usa 'Bearer {token}'",
+            Name = "Authorization",
+            In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey
+        });
+        c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement {
         {
             new Microsoft.OpenApi.Models.OpenApiSecurityScheme { Reference = new Microsoft.OpenApi.Models.OpenApiReference {
                 Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
                 Id = "Bearer"
             }}, new string[] { }
         }
+        });
     });
-});
 
-var app = builder.Build();
+    var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
+    app.UseSerilogRequestLogging();
+
+    app.UseHttpsRedirection();
+    app.UseCors("Permisson");
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+
+    app.MapControllers();
+
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-app.UseCors("Permisson");
-app.UseAuthentication();
-app.UseAuthorization();
-
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application failed to start");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

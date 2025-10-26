@@ -16,7 +16,7 @@ export interface LoginRequest {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:8080/api';
+  private baseUrl = 'https://localhost:7128/api';
 
   constructor(private http: HttpClient) { }
 

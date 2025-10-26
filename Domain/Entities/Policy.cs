@@ -21,7 +21,7 @@ namespace Domain.Entities
         public virtual Client? Client { get; set; }
 
 
-        protected Policy() { }
+        public Policy() { }
 
         public Policy(PolicyNumber folio, TypePolicy idTypePolicy, DateTime initDate, DateTime endDate, decimal insuredAmount, bool status)
         {

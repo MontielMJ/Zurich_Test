@@ -115,7 +115,6 @@ export class AuthService {
     return role === 'Admin';
   }
 
-  // Verificar si el usuario tiene un rol específico
   hasRole(role: string): boolean {
     const userRole = this.getUserRole();
     return userRole === role;

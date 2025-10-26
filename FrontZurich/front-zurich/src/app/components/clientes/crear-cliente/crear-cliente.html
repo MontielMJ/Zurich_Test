@@ -58,7 +58,7 @@
               matInput 
               formControlName="phone" 
               placeholder="Ingrese el teléfono"
-              maxlength="15">
+              maxlength="10">
             <mat-icon matSuffix>phone</mat-icon>
             
             <mat-error *ngIf="phone?.hasError('required')">
@@ -76,7 +76,7 @@
               matInput 
               formControlName="identificationNumber" 
               placeholder="Ingrese el número de identificación"
-              maxlength="13">
+              maxlength="10">
             <mat-icon matSuffix>badge</mat-icon>
             
             <mat-error *ngIf="identificationNumber?.hasError('required')">
