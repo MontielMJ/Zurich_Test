@@ -8,16 +8,19 @@ namespace Zurich_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Policy =UserRoles.PolicyOnlyAdmin)]
+    
     public class ClientController : ControllerBase
     {
         private readonly ClienteHandler _registrarClienteHandler;
-        public ClientController(ClienteHandler registrarClienteHandler)
+        private readonly PolizaHandler _polizaHandler;
+        public ClientController(ClienteHandler registrarClienteHandler, PolizaHandler polizaHandler)
         {
             this._registrarClienteHandler = registrarClienteHandler;
+            _polizaHandler = polizaHandler;
         }
 
         [HttpGet]
+     
         public async Task<IActionResult> Get()
         {
             var clientes = await _registrarClienteHandler.GetClientsAsync();

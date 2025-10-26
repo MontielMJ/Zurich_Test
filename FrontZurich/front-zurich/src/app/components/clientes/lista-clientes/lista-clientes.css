@@ -1,0 +1,12 @@
+.access-denied {
+  max-width: 500px;
+  margin: 50px auto;
+  text-align: center;
+}
+
+.access-denied mat-icon {
+  font-size: 38px;
+  width: 38px;
+  height: 38px;
+  margin-bottom: 1px;
+}

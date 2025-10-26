@@ -12,6 +12,24 @@ namespace Application.Handler
             this._polizaRepo = polizaRepo;
         }
 
+        public async Task<List<Policy>> ObtenerPolizasAsync()
+        {
+            var polizas = await _polizaRepo.GetAllPolicies();
+            if (polizas == null)
+            {
+                throw new Exception("No hay polizas");
+            }
+            return polizas;
+        }
+        public async Task<Policy> ObtenerPolizasPorPolizaIdAsync(int id)
+        {
+            var polizas = await _polizaRepo.ObtenerPolizasPorPolizaIdAsync(id);
+            if (polizas == null)
+            {
+                throw new Exception("Poliza no encontrada");
+            }
+            return polizas;
+        }
         public async Task<List<Policy>> ObtenerPolizasPorClienteIdAsync(int idClient)
         {
             var polizas = await _polizaRepo.ObtenerPolizasPorClienteIdAsync(idClient);
@@ -26,13 +44,13 @@ namespace Application.Handler
         {
             return await _polizaRepo.AddPolizaPorClienteIdAsync(policy, idClient);
         }
-        public async Task DeletePolizaClienteIdAsync(int idPolicy, int idClient)
+        public async Task DeletePolizaClienteIdAsync(int idPolicy)
         {
-            await _polizaRepo.DeletePolizaClienteIdAsync(idPolicy, idClient);
+            await _polizaRepo.DeletePolizaClienteIdAsync(idPolicy);
         }
-        public async Task UpdatePolizaPorClienteAsync(Policy policy, int idClient)
+        public async Task UpdatePolizaPorClienteAsync(Policy policy, int id)
         {
-            await _polizaRepo.UpdatePolizaPorClienteAsync(policy, idClient);
+            await _polizaRepo.UpdatePolizaPorClienteAsync(policy, id);
         }
    
     }

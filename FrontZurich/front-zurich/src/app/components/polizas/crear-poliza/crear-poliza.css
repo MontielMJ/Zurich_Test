@@ -1,0 +1,140 @@
+.container {
+  padding: 20px;
+  min-height: calc(100vh - 64px);
+  background-color: #f5f5f5;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.poliza-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: calc(50% - 8px);
+}
+
+.full-width-error {
+  width: 100%;
+  margin-top: -16px;
+  margin-bottom: 8px;
+}
+
+.date-row {
+  display: flex;
+  gap: 16px;
+}
+
+.hint {
+  color: #666;
+  font-size: 0.8em;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.submit-button, .cancel-button {
+  min-width: 120px;
+}
+
+.cancel-button {
+  margin-right: 12px;
+}
+
+/* Sección de información del cliente */
+.cliente-info-section {
+  background-color: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 4px solid #3f51b5;
+  margin-bottom: 16px;
+}
+
+.cliente-info-section h4 {
+  margin: 0 0 12px 0;
+  color: #3f51b5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cliente-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.cliente-details p {
+  margin: 0;
+  font-size: 0.9em;
+  color: #555;
+}
+
+/* Información de vigencia */
+.vigencia-info {
+  background-color: #e8f5e8;
+  padding: 12px;
+  border-radius: 4px;
+  border-left: 4px solid #4caf50;
+}
+
+.vigencia-info p {
+  margin: 4px 0;
+  font-size: 0.9em;
+  color: #2e7d32;
+}
+
+/* Estilos para los mensajes de snackbar */
+::ng-deep .success-snackbar {
+  background-color: #4caf50;
+  color: white;
+}
+
+::ng-deep .error-snackbar {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .form-container {
+    max-width: 100%;
+  }
+  
+  .date-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .half-width {
+    width: 100%;
+  }
+  
+  .mat-card-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .cancel-button, .submit-button {
+    width: 100%;
+    margin: 0 !important;
+  }
+  
+  .cliente-details {
+    grid-template-columns: 1fr;
+  }
+}

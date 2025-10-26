@@ -15,7 +15,7 @@ namespace Domain.ValueObjects
             if (string.IsNullOrWhiteSpace(value.ToString()))
                 throw new Exception("El número de póliza no puede estar vacío.");
 
-            if (value.ToString().Length > 1)
+            if (value.ToString().Length < 1)
                 throw new Exception("El número de póliza debe tener al menos 1 caracter.");
 
             Value = value;

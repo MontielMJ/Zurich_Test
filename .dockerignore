@@ -1,0 +1,36 @@
+# Build outputs
+**/bin/
+**/obj/
+**/publish/
+
+# IDE files
+**/.vs/
+**/.vscode/
+*.user
+*.suo
+*.vssscc
+
+# Runtime files
+*.db
+*.sqlite3
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project files
+docker-compose*
+Dockerfile*
+
+# Node.js (si existe)
+node_modules/
+npm-debug.log*
+
+# Git
+.git/
+.gitignore
+
+# Configuración
+.env
+*.pubxml

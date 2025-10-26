@@ -1,0 +1,57 @@
+<mat-toolbar color="primary" class="navbar" *ngIf="shouldShowNavbar()">
+  <div class="navbar-brand" routerLink="/clientes">
+    <mat-icon class="brand-icon">security</mat-icon>
+    <span class="brand-text">Sistema de Seguros</span>
+  </div>
+
+  <div class="spacer"></div>
+
+  <!-- Menú cuando está logueado -->
+  <div class="nav-links">
+    <!-- Sección Clientes - Solo para Admin -->
+    <button 
+      *ngIf="shouldShowClientes()"
+      mat-button 
+      routerLink="/clientes" 
+      routerLinkActive="active-link">
+      <mat-icon>people</mat-icon>
+      Clientes
+    </button>
+    
+    <!-- Sección Pólizas - Para todos los usuarios -->
+    <button 
+      *ngIf="shouldShowPolizas()"
+      mat-button 
+      routerLink="/polizas" 
+      routerLinkActive="active-link">
+      <mat-icon>policy</mat-icon>
+      Pólizas
+    </button>
+
+    <!-- Menú de usuario -->
+    <button 
+      mat-button 
+      [matMenuTriggerFor]="userMenu"
+      class="user-menu-button">
+      <mat-icon>account_circle</mat-icon>
+      {{ userName }}
+      <small>({{ userRole }})</small>
+      <mat-icon>arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #userMenu="matMenu">
+      <div class="user-info-menu">
+        <div class="user-details">
+          <strong>{{ userName }}</strong>
+          <small>{{ userEmail }}</small>
+          <small class="role-badge" [class.admin-badge]="isAdmin">{{ userRole }}</small>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="onLogout()">
+        <mat-icon>logout</mat-icon>
+        <span>Cerrar Sesión</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

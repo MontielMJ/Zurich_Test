@@ -12,15 +12,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{437792E5-BCFD-4016-B10C-32CF5F6AB1EE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZurichUnitTest.Tests", "ZurichUnitTest.Tests\ZurichUnitTest.Tests.csproj", "{DD2FDE9B-1382-4D5B-8F79-8F41AF36AA09}"
-	ProjectSection(ProjectDependencies) = postProject
-		{AA05F53F-776F-4A92-A1A4-4D08900D6A54} = {AA05F53F-776F-4A92-A1A4-4D08900D6A54}
-		{DAD1AF61-637F-49C6-A640-F9DAFC2CC4C6} = {DAD1AF61-637F-49C6-A640-F9DAFC2CC4C6}
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{F0049FAE-3DEC-4E45-81F2-2B795113F249}"
-	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

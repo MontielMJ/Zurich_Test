@@ -11,19 +11,19 @@ namespace Domain.Entities
     public class Policy
     { 
         public int Id { get; private set; }
-        public PolicyNumber Folio { get; private set; }
-        public TypePolicy idTypePolicy { get; private set; }
-        public DateTime InitDate { get; private set; }
-        public DateTime EndDate { get; private set; }
-        public decimal InsuredAmount { get; private set; }
-        public int IdClient { get; private set; }
-        public bool Status { get; private set; }
+        public PolicyNumber Folio { get;  set; }
+        public TypePolicy IdTypePolicy { get;  set; }
+        public DateTime InitDate { get;  set; }
+        public DateTime EndDate { get;  set; }
+        public decimal InsuredAmount { get;  set; }
+        public int IdClient { get;  set; }
+        public bool Status { get;  set; }
         public virtual Client? Client { get; set; }
 
 
         protected Policy() { }
 
-        public Policy(PolicyNumber folio, TypePolicy type, DateTime initDate, DateTime endDate, decimal insuredAmount, bool status)
+        public Policy(PolicyNumber folio, TypePolicy idTypePolicy, DateTime initDate, DateTime endDate, decimal insuredAmount, bool status)
         {
             if (initDate >= endDate)
                 throw new Exception("La fecha de inicio debe ser anterior a la fecha de fin.");
@@ -32,7 +32,7 @@ namespace Domain.Entities
                 throw new Exception("El monto asegurado debe ser mayor a cero.");
 
             Folio = folio;
-            idTypePolicy = type;
+            IdTypePolicy = idTypePolicy;
             InitDate = initDate;
             EndDate = endDate;
             InsuredAmount = insuredAmount;
