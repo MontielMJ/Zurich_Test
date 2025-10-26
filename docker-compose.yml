@@ -1,13 +1,12 @@
-version: '3.9'
-
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
     container_name: zurich_sql
     environment:
-      SA_PASSWORD: "Zur1chDB!P@ss"
+      SA_PASSWORD: "Zur1chDB2025"
       ACCEPT_EULA: "Y"
       MSSQL_MEMORY_LIMIT_MB: "2048"
+      MSSQL_TCP_PORT: 1433
     ports:
       - "1434:1433"
     volumes:
@@ -15,32 +14,50 @@ services:
     networks:
       - zurich-net
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -Q 'SELECT 1'"]
-      interval: 15s
-      timeout: 5s
-      retries: 10
-      start_period: 60s
+      test: ["CMD-SHELL", "timeout 10 bash -c '</dev/tcp/localhost/1433' || exit 1"]
+      interval: 10s
+      timeout: 30s
+      retries: 20
+      start_period: 90s
+    restart: unless-stopped
 
   db-init:
     image: mcr.microsoft.com/mssql-tools
+    container_name: zurich_db_init
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
     volumes:
       - ./initdb:/initdb
     command: >
       sh -c "
-      echo '=== INICIALIZACIÓN DE BASE DE DATOS ===' &&
-      echo 'Verificando conexión con SQL Server...' &&
-      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -Q 'SELECT @@VERSION' &&
-      echo 'Ejecutando script de creación...' &&
-      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -d master -i /initdb/create_database.sql &&
-      echo 'Verificando que la base de datos fue creada...' &&
-      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB!P@ss' -Q 'SELECT name FROM sys.databases' &&
-      echo '=== INICIALIZACIÓN COMPLETADA ==='"
+        echo '=== INICIALIZACIÓN DE BASE DE DATOS ===' &&
+        echo 'Esperando que SQL Server esté completamente listo...' &&
+        # ✅ ESPERA CON REINTENTOS MEJORADA
+        for i in $$(seq 1 30); do
+          if /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB2025' -Q 'SELECT 1' > /dev/null 2>&1; then
+            echo '✅ SQL Server está listo!' &&
+            break
+          else
+            echo 'Intento $$i/30: SQL Server no está listo aún, esperando 5 segundos...' &&
+            sleep 5
+          fi
+          if [ $$i -eq 30 ]; then
+            echo '❌ Error: SQL Server no respondió después de 150 segundos' &&
+            exit 1
+          fi
+        done &&
+        echo 'Verificando conexión...' &&
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB2025' -Q 'SELECT @@VERSION' &&
+        echo 'Ejecutando script de creación...' &&
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB2025' -d master -i /initdb/create_database.sql &&
+        echo 'Verificando que la base de datos fue creada...' &&
+        /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P 'Zur1chDB2025' -Q 'SELECT name FROM sys.databases' &&
+        echo '✅ === INICIALIZACIÓN COMPLETADA ==='"
     networks:
       - zurich-net
     restart: on-failure
-
+    
   api:
     build:
       context: .
@@ -48,12 +65,12 @@ services:
     container_name: zurich_api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__MyConnection=Server=sqlserver,1433;Database=ZurichDB;User Id=sa;Password=Zur1chDB!P@ss;TrustServerCertificate=True;
+      - ConnectionStrings__MyConnection=Server=sqlserver,1433;Database=ZurichDB;User Id=sa;Password=Zur1chDB2025;TrustServerCertificate=True;
     ports:
       - "8080:8080"
     depends_on:
-      - sqlserver
-      - db-init
+      db-init:
+        condition: service_completed_successfully
     networks:
       - zurich-net
 
@@ -65,16 +82,16 @@ services:
     ports:
       - "3000:8080"
     depends_on:
-      - api
+      api:
+        condition: service_started
     networks:
       - zurich-net
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
-      start_period: 5s
-
+      start_period: 10s
 volumes:
   sql_data:
 

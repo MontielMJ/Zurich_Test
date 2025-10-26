@@ -1,6 +1,3 @@
--- Esperar a que SQL Server esté completamente listo
-WAITFOR DELAY '00:00:10';
-GO
 
 PRINT 'Iniciando creación de base de datos ZurichDB...';
 GO
@@ -63,16 +60,19 @@ GO
 -- Crear tabla clients
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='clients' AND xtype='U')
 BEGIN
-    CREATE TABLE [dbo].[clients](
-        [id] [int] IDENTITY(1,1) NOT NULL,
-        [fullname] [varchar](100) NOT NULL,
-        [email] [varchar](100) NOT NULL,
-        [phone] [varchar](15) NOT NULL, -- Cambiado a varchar para manejar formatos internacionales
-        [identificationNumber] [varchar](20) NOT NULL, -- Cambiado a varchar
-        [createAt] [datetime] NOT NULL, -- Cambiado a datetime para compatibilidad
-        [status] [bit] NOT NULL,
-        CONSTRAINT [PK_clients] PRIMARY KEY CLUSTERED ([id] ASC)
-    ) ON [PRIMARY]
+CREATE TABLE [dbo].[clients](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[fullname] [varchar](100) NOT NULL,
+	[email] [varchar](100) NOT NULL,
+	[phone] [numeric](10, 0) NOT NULL,
+	[identificationNumber] [numeric](10, 0) NOT NULL,
+	[createAt] [date] NOT NULL,
+	[status] [bit] NOT NULL,
+ CONSTRAINT [PK_tbl_clients] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
 END
 GO
 
@@ -81,7 +81,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='insurancePolicies' AND xtype
 BEGIN
     CREATE TABLE [dbo].[insurancePolicies](
         [id] [int] IDENTITY(1,1) NOT NULL,
-        [folio] [varchar](20) NOT NULL, -- Cambiado a varchar
+        [folio] [numeric](10) NOT NULL,
         [initDate] [datetime] NOT NULL,
         [endDate] [datetime] NOT NULL,
         [insuredAmount] [decimal](18, 2) NOT NULL,
