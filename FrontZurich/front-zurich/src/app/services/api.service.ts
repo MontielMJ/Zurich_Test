@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../enviroments/enviroment'; 
+
+const API_URL = environment.apiUrl;
 
 export interface LoginResponse {
   token: string;
@@ -16,7 +19,7 @@ export interface LoginRequest {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'https://localhost:7128/api';
+  private baseUrl = API_URL;
 
   constructor(private http: HttpClient) { }
 
@@ -29,12 +32,6 @@ export class ApiService {
   
   login(credentials: LoginRequest): Observable<LoginResponse> {
     const url = `${this.baseUrl}/Auth/login`;
-    console.log('Enviando credenciales a:', url);
-    console.log('Credenciales:', { 
-      email: credentials.username, 
-      password: '***' //
-    });
-    
     return this.http.post<LoginResponse>(url, credentials, { 
       headers: this.getHeaders() 
     }).pipe(
