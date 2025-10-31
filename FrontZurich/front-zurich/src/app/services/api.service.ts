@@ -16,7 +16,7 @@ export interface LoginRequest {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'https://localhost:7128/api';
+  private baseUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) { }
 
@@ -29,11 +29,11 @@ export class ApiService {
   
   login(credentials: LoginRequest): Observable<LoginResponse> {
     const url = `${this.baseUrl}/Auth/login`;
-    console.log('Enviando credenciales a:', url);
+    /*console.log('Enviando credenciales a:', url);
     console.log('Credenciales:', { 
       email: credentials.username, 
-      password: '***' //
-    });
+      password: '***' 
+    });*/
     
     return this.http.post<LoginResponse>(url, credentials, { 
       headers: this.getHeaders() 
