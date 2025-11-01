@@ -11,6 +11,9 @@ namespace Domain.Enums
         Vida = 1,
         Auto = 2,
         Hogar = 3,
-        Salud = 4
+        Salud = 4,
+        Empresarial = 5,
+        Viaje = 6,
+        Responabilidad_Civil = 7,
     }
 }

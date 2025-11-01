@@ -3,13 +3,14 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "node scripts/set-env.js && ng build",
-    "build:prod": "NODE_ENV=production node scripts/set-env.js && ng build --configuration=production",
-    "build:staging": "NODE_ENV=staging node scripts/set-env.js && ng build",
-    "test": "node scripts/set-env.js && ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e",
+    "start": "NODE_ENV=dev node set-env.js && ng serve",
+    "build": "NODE_ENV=dev node set-env.js && ng build",
+    "build:dev": "NODE_ENV=dev node set-env.js && ng build --configuration=dev",
+    "build:prod": "NODE_ENV=production node set-env.js && ng build --configuration=production",
+    "watch": "NODE_ENV=dev node set-env.js && ng build --watch --configuration=dev",
+    "test": "NODE_ENV=dev node set-env.js && ng test",
+    "env:check": "NODE_ENV=dev node set-env.js && echo '=== ENTORNO DEV ===' && cat src/environments/environment.dev.ts",
+    "env:check:prod": "NODE_ENV=production node set-env.js && echo '=== ENTORNO PROD ===' && cat src/environments/environment.prod.ts",
     "set-env": "node scripts/set-env.js"
   },
   "prettier": {

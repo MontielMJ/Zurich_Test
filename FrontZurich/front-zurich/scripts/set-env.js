@@ -1,54 +1,87 @@
 const fs = require('fs');
 const path = require('path');
 
-// Determinar el entorno
-const env = process.env.NODE_ENV || 'development';
-console.log('🔄 Configurando entorno:', env);
+// Determinar entorno - mapear 'dev' a 'development'
+let env = process.env.NODE_ENV || 'development';
 
-// Cargar variables de entorno
+// Si usan 'dev' en los comandos, mapear a 'development'
+if (env === 'dev') {
+  env = 'development';
+  process.env.NODE_ENV = 'development';
+}
+
+console.log('🔧 CONFIGURANDO ENTORNO:', env.toUpperCase());
+console.log('========================');
+
+// Cargar variables según el entorno
 const envFiles = [
   '.env',
   `.env.${env}`,
-  `.env.local`,
-  `.env.${env}.local`
+  `.env.dev`,
+  '.env.development'
 ];
 
+let envLoaded = false;
 envFiles.forEach(envFile => {
-  const envPath = path.resolve(process.cwd(), envFile);
-  if (fs.existsSync(envPath)) {
+  const envPath = path.join(__dirname, envFile);
+  if (fs.existsSync(envPath) && !envLoaded) {
     require('dotenv').config({ path: envPath });
-    console.log(`📁 Variables cargadas desde: ${envFile}`);
+    console.log(`📥 CARGADO: ${envFile}`);
+    envLoaded = true;
   }
 });
 
-// Validar variables requeridas
-const requiredVars = ['API_URL', 'API_KEY'];
-requiredVars.forEach(varName => {
-  if (!process.env[varName]) {
-    console.warn(`⚠️  Advertencia: ${varName} no está definida`);
-  }
-});
-
-// Generar contenido para environment.ts
-const environmentContent = `export const environment = {
-  production: ${env === 'production'},
-  apiUrl: '${process.env.API_URL || 'http://localhost:7128/api'}',
-  apiKey: '${process.env.API_KEY || 'default-key'}',
-  version: '${process.env.APP_VERSION || '1.0.0'}',
-  environment: '${env}'
-};`;
-
-// Ruta del archivo a generar
-const environmentPath = path.join(__dirname, '../src/environments/environment.ts');
-
-// Crear directorio si no existe
-const envDir = path.dirname(environmentPath);
-if (!fs.existsSync(envDir)) {
-  fs.mkdirSync(envDir, { recursive: true });
+if (!envLoaded) {
+  require('dotenv').config();
+  console.log('📥 CARGADO: .env (base)');
 }
 
-// Escribir archivo
-fs.writeFileSync(environmentPath, environmentContent);
-console.log('✅ environment.ts generado correctamente');
-console.log('📍 Ubicación:', environmentPath);
-console.log('🔑 API_URL:', process.env.API_URL || 'No definida');
+// Mostrar variables cargadas
+console.log('\n🔑 VARIABLES CARGADAS:');
+console.log('=====================');
+console.log(`API_URL: ${process.env.API_URL || 'No definida'}`);
+if (process.env.API_KEY) {
+  console.log(`API_KEY: ***${process.env.API_KEY.slice(-4)}`);
+} else {
+  console.log('API_KEY: No definida');
+}
+
+// Generar environment.dev.ts para desarrollo
+const devEnvironmentContent = `// Archivo generado automáticamente - No editar manualmente
+// Entorno: ${env}
+// Generado: ${new Date().toISOString()}
+export const environment = {
+  production: false,
+  apiUrl: '${process.env.API_URL || 'http://localhost:3000/api'}',
+  apiKey: '${process.env.API_KEY || 'dev-key-default'}',
+  version: '${process.env.APP_VERSION || '1.0.0'}',
+  buildDate: '${new Date().toISOString()}',
+  environment: '${env}'
+};
+`;
+
+// Generar environment.prod.ts para producción
+const prodEnvironmentContent = `// Archivo generado automáticamente - No editar manualmente  
+// Entorno: production
+// Generado: ${new Date().toISOString()}
+export const environment = {
+  production: true,
+  apiUrl: '${process.env.API_URL || 'https://api.zurich.com/api'}',
+  apiKey: '${process.env.API_KEY || 'prod-key-default'}',
+  version: '${process.env.APP_VERSION || '1.0.0'}',
+  buildDate: '${new Date().toISOString()}',
+  environment: 'production'
+};
+`;
+
+// Escribir archivos
+const devPath = path.join(__dirname, 'src', 'environments', 'environment.dev.ts');
+const prodPath = path.join(__dirname, 'src', 'environments', 'environment.prod.ts');
+
+fs.writeFileSync(devPath, devEnvironmentContent);
+fs.writeFileSync(prodPath, prodEnvironmentContent);
+
+console.log('\n✅ ARCHIVOS GENERADOS:');
+console.log('====================');
+console.log(`📍 Dev: ${devPath}`);
+console.log(`📍 Prod: ${prodPath}`);
