@@ -26,7 +26,7 @@ jobs:
         working-directory: ./FrontZurich/front-zurich
         run: |
             npm ci
-            npm run build
+            npm run build -- --base-href /zurich_test/
             cp dist/front-zurich/index.html dist/front-zurich/404.html
         
       - name: Artifact upload
