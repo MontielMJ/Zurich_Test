@@ -11,10 +11,13 @@ jobs:
       
       - name: Setup Node
         uses: actions/setup-node@v6
+      
+      - name: List repository
+        run: ls -R
         
       - name: Install Dependencies
         run: npm install
-        working-directory: :/FrontZurich/front-zurich
+        working-directory: ./FrontZurich/front-zurich
       
       - name: Build app
         run:  npm run build
