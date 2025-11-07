@@ -27,8 +27,12 @@ jobs:
         run: |
             npm ci
             npm run build -- --base-href /zurich_test/
-            cp dist/front-zurich/index.html dist/front-zurich/404.html
-        
+      - name: Show working directory
+        run: |
+          pwd
+          echo "Contenido de dist/front-zurich:"
+          ls -R dist/front-zurich
+          
       - name: Artifact upload
         uses: actions/upload-pages-artifact@v4
         with: 
