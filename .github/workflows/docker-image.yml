@@ -37,7 +37,7 @@ jobs:
       - name: Artifact upload
         uses: actions/upload-pages-artifact@v4
         with: 
-          path: ./FrontZurich/front-zurich/dist/front-zurich
+          path: ./FrontZurich/front-zurich/dist/front-zurich/browser
         
   deploy:
     needs: build
