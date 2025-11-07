@@ -8,11 +8,16 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --silent
 
-# Copiar todo el código fuente
+# Copiar TODO el código fuente (incluyendo la carpeta scripts)
 COPY . .
 
-# Build de Angular en modo producción
-RUN npm run build --prod
+# Verificar que los archivos necesarios existen
+RUN ls -la scripts/ && \
+    echo "=== Contenido de scripts/ ===" && \
+    ls -la scripts/ || echo "No existe carpeta scripts"
+
+# Build de Angular en modo producción (usa el script correcto)
+RUN npm run set-env && npm run build:prod
 
 # ================================
 # Etapa 2: Servir con NGINX
