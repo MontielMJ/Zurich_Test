@@ -18,7 +18,7 @@ namespace ZurichUnitTest.Tests.Domain
             var fechaInit = DateTime.Now.AddDays(-1);
             var fechaEnd = DateTime.Now.AddYears(1);
 
-            var poliza = new Policy(folio: new PolicyNumber(1), type: TypePolicy.Auto, initDate: fechaInit, endDate: fechaEnd, insuredAmount: 20000, status: false);
+            var poliza = new Policy(folio: new PolicyNumber(1), idTypePolicy: TypePolicy.Auto, initDate: fechaInit, endDate: fechaEnd, insuredAmount: 20000, status: false);
         }
 
         [Fact]

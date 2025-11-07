@@ -23,7 +23,7 @@ namespace ZurichUnitTest.Tests.Application
                     new Client(fullname: "José Gómez", email: new Email("jmontiel@gmail.com"), phone: 4561326457, identificationNumber: 1235647891, createAt: DateTime.Now, status: false)
                 });
 
-            var clientHandler = new ClienteHandler(mockRepo.Object);
+            var clientHandler = new ClienteHandler(mockRepo.Object, logger: null);
             var clients = await clientHandler.GetClientsAsync();
             clients.Should().NotBeEmpty();
             clients.First().Fullname.Should().Be("José Gómez");
