@@ -1,40 +1,39 @@
-name: Docker CI/CD
+name: CI
+
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: Setup Node
-        uses: actions/setup-node@v6
-      
-      - name: List repository
-        run: |
-          ls -R
-        
-      - name: Install Dependencies
-        run: npm install
+
+      # ---------- FRONTEND ----------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+
+      - name: Install frontend dependencies
         working-directory: ./FrontZurich/front-zurich
-      
-      - name: Build Frontend
-        run:  npm run build
-      - name: Artifac upload
-        uses: actions/upload-artifact@v4
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./FrontZurich/front-zurich
+        run: npm run build
+
+      # ---------- BACKEND ----------
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          name: github-pages
-          path: dist/front-zurich/browser
-          
-  deploy:
-    needs: build
-    permissions:
-      pages: write
-      id-token: write  
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to Github
-        id: deployment
-        uses: actions/deploy-pages@v4
+          dotnet-version: '8.0.x'
+
+      - name: Restore backend
+        run: dotnet restore ./Zurich_Test.sln
+
+      - name: Build backend
+        run: dotnet build --configuration Release ./Zurich_Test.sln
