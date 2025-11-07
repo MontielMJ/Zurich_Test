@@ -37,3 +37,14 @@ jobs:
 
       - name: Build backend
         run: dotnet build --configuration Release ./Zurich_Test.sln
+        
+  deploy: 
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Github
+        id: deployment
+        uses: actions/deploy-pages@v4
