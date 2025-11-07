@@ -14,7 +14,7 @@ jobs:
       
       - name: List repository
         run: |
-          pwd ls -R
+          ls -R
         
       - name: Install Dependencies
         run: npm install
