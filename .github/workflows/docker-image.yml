@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'  # Especificar versión de Node.js
+          node-version: '22'  # Especificar versión de Node.js
 
       - name: Install frontend dependencies
         working-directory: ./FrontZurich/front-zurich
