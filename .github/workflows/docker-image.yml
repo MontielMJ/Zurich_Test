@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with: 
           name: github-pages
-          path: dist/front-zurich/browser
+          path: ./FrontZurich/front-zurich/dist/front-zurich
         
   deploy: 
     needs: build
