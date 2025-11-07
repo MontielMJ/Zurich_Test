@@ -26,7 +26,8 @@ jobs:
         working-directory: ./FrontZurich/front-zurich
         run: |
             npm ci
-            npm run build -- --base-href /zurich_test/
+            npm run build --prefix ./FrontZurich/front-zurich
+      
       - name: Show working directory
         run: |
           pwd
