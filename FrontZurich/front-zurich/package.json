@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "build": "ng build --base-href ./front-zurich/",
+    "build": "ng build --base-href /zurich_test/",
     "build:dev": "ng build --base-href ./front-zurich/ --configuration=dev", 
     "build:prod": "ng build --base-href ./front-zurich/ --configuration=production ",
     "set-env": "node scripts/set-env.js"
