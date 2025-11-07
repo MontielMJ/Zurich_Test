@@ -25,15 +25,20 @@ jobs:
       - name: Build frontend
         working-directory: ./FrontZurich/front-zurich
         run: npm run build
-
-      # ---------- BACKEND ----------
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Restore backend
-        run: dotnet restore ./Zurich_Test.sln
-
-      - name: Build backend
-        run: dotnet build --configuration Release ./Zurich_Test.sln
+        
+      - name: Artifact upload
+        uses: actions/upload-pages-artifact@v4
+        with: 
+          name: github-pages
+          path: ./FrontZurich/front-zurich/dist/front-zurich
+        
+  deploy: 
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Github
+        id: deployment
+        uses: actions/deploy-pages@v4
