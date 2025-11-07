@@ -32,7 +32,7 @@ jobs:
         run: |
           pwd
           echo "Contenido de dist/front-zurich:"
-          ls -la ./FrontZurich/front-zurich/dist/
+          ls -R ./FrontZurich/front-zurich/dist || echo "dist no encontrada"
           
       - name: Artifact upload
         uses: actions/upload-pages-artifact@v4
