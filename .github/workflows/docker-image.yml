@@ -24,7 +24,10 @@ jobs:
 
       - name: Build frontend
         working-directory: ./FrontZurich/front-zurich
-        run: npm run build
+        run: |
+            npm ci
+            npm run build
+            cp dist/front-zurich/index.html dist/front-zurich/404.html
         
       - name: Artifact upload
         uses: actions/upload-pages-artifact@v4
