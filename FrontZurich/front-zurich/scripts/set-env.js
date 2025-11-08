@@ -9,14 +9,14 @@ const env = process.env.NODE_ENV || 'dev';
 const targetPath = path.join(projectRoot, 'src', 'environments', `environment.${env}.ts`);
 
 // URL de la API dinámica según el entorno
-let apiUrl = 'http://localhost:8080/api'; // default
+let apiUrl = 'https://zurich-test.onrender.com/api'; // default
 
 if (process.env.API_URL) {
   apiUrl = process.env.API_URL;
 } else if (env === 'production') {
   apiUrl = '/api'; 
 } else if (env === 'dev') {
-  apiUrl = 'http://localhost:8080/api';
+  apiUrl = 'https://zurich-test.onrender.com/api';
 }
 
 const envConfig = `export const environment = {
