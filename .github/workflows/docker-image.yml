@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD
 
 on:
   push:
@@ -17,6 +17,8 @@ jobs:
       # ---------- FRONTEND ----------
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        with:
+          node-version: '22'  # Especificar versión de Node.js
 
       - name: Install frontend dependencies
         working-directory: ./FrontZurich/front-zurich
@@ -25,20 +27,28 @@ jobs:
       - name: Build frontend
         working-directory: ./FrontZurich/front-zurich
         run: npm run build
-        
+
+      - name: Show working directory
+        run: |
+          pwd
+          echo "Contenido de dist/front-zurich:"
+          ls -R ./FrontZurich/front-zurich/dist || echo "dist no encontrada"
+          
       - name: Artifact upload
         uses: actions/upload-pages-artifact@v4
         with: 
-          name: github-pages
-          path: ./FrontZurich/front-zurich/dist/front-zurich
+          path: ./FrontZurich/front-zurich/dist/front-zurich/browser
         
-  deploy: 
+  deploy:
     needs: build
     permissions:
       pages: write
       id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to Github
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
