@@ -28,6 +28,8 @@ WORKDIR /app
 COPY --from=build /out .
 
 # Exponer el puerto de la API
+# Escuchar en el puerto dinámico de Render
+ENV ASPNETCORE_URLS=http://+:${PORT}
 EXPOSE 8080
 
 # Comando de inicio
